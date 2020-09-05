@@ -8,9 +8,6 @@ shinyOptions(cache = diskCache("./cache"), size = 50e6)
 #####################################################################################
 
 
-spec_csv(souce_url)
-  
-
 souce_url <- "https://raw.githubusercontent.com/ArrowheadAnalytics/next-gen-scrapy-2.0/master/pass_and_game_data.csv"
 
 df <- read_csv(
