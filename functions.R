@@ -88,8 +88,8 @@ add_field <- function() {
   )
 }
 
-maps <- function(df) {
-
+maps <- function(df, input) {
+  
   pass_map <- df %>%
     ggplot(aes(x = x_coord, y = y_coord)) +
     geom_density_2d_filled(
@@ -97,7 +97,9 @@ maps <- function(df) {
       contour_var = "ndensity", # normalize across facets
       breaks = seq(0.1, 1.0, length.out = 10)
     ) +
-    facet_wrap(~name)
+    facet_wrap(
+      ~name
+      )
   
   pass_map +
     add_field() +
