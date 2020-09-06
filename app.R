@@ -18,6 +18,7 @@ df <- read_csv(
   mutate(
     week = as.integer(week.y)
   ) %>%
+  filter(!is.na(x_coord), !is.na(y_coord), !is.na(name)) %>%
   group_by(name) %>%
   mutate(n = n()) %>%
   filter(n > 100) %>%
@@ -78,7 +79,18 @@ ui <- fluidPage(
     
     fluidRow(
       column(12, align="center",
-             {plotOutput(outputId = "plot1", height = 'auto') %>%
+             {plotOutput(outputId = "plot1", width = "100%", height = "1000px") %>%
+                 shinycssloaders::withSpinner(type = 6,# types see https://projects.lukehaas.me/css-loaders/
+                                              color = "#414141",
+                                              color.background = "#FFFFFF")
+             }
+      )
+    ), 
+    
+    
+    fluidRow(
+      column(12, align="center",
+             {plotOutput(outputId = "plot2", width = "100%", height = "1000px") %>%
                  shinycssloaders::withSpinner(type = 6,# types see https://projects.lukehaas.me/css-loaders/
                                               color = "#414141",
                                               color.background = "#FFFFFF")
@@ -134,18 +146,35 @@ server <- function(input, output, session) {
                       dplyr::last(name)
                       )
           )) %>%
-        select(name, x_coord, y_coord)
+        select(name, sample, x_coord, y_coord)
       
     }, ignoreNULL = FALSE
   )
   
   
-  # comparison plot
-  output$plot1 <- renderPlot({
-    maps(fullInput(), input)
-  }, height = function() {
-    (9/16) * session$clientData$output_plot1_width
-  })
+  #data
+  comparisonInput <- eventReactive(
+    input$update, {
+      
+      qb_density_compare(fullInput(), n = 50)
+      
+    }, ignoreNULL = FALSE
+  )
+  
+  
+
+  output$plot1 <- renderCachedPlot(
+    expr = maps(fullInput(), input), 
+    res = 150,
+    cacheKeyExpr = { list(fullInput()) }
+  )
+  
+  
+  output$plot2 <- renderCachedPlot(
+    expr = compare(comparisonInput()), 
+    res = 150,
+    cacheKeyExpr = { list(fullInput()) }
+  )
   
   
 }

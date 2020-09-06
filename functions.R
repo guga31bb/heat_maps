@@ -1,5 +1,6 @@
 library(tidyverse)
 library(ggExtra)
+library(ggtext)
 library(patchwork)
 library(paletteer)
 library(scales)
@@ -111,5 +112,85 @@ maps <- function(df, input) {
 }
 
 
+qb_density_compare <- function(pass_df, n = 200){
+  
+  # filter to qb1
+  qb1 <- pass_df %>% 
+    filter(sample == 1)
+  
+  #filter to qb2
+  qb2 <- pass_df %>% 
+    filter(sample == 2)
+  
+  # get x/y coords as vectors
+  qb1_x <- pull(qb1, x_coord)
+  qb1_y <- pull(qb1, y_coord)
+  
+  # get x/y coords as vectors
+  qb2_x <- pull(qb2, x_coord)
+  qb2_y <- pull(qb2, y_coord)
+  
+  # get x and y range to compute comparisons across
+  x_rng = range(c(qb1_x, qb2_x))
+  y_rng = range(c(qb1_y, qb2_y))
+  
+  # Explicitly calculate bandwidth for future use
+  bandwidth_x <- MASS::bandwidth.nrd(c(qb1_x, qb2_x))
+  bandwidth_y <- MASS::bandwidth.nrd(c(qb1_y, qb2_y))
+  
+  bandwidth_calc <- c(bandwidth_x, bandwidth_y)
+  
+  # Calculate the 2d density estimate over the common range
+  d2_qb1 = MASS::kde2d(qb1_x, qb1_y, h = bandwidth_calc, n=n, lims=c(x_rng, y_rng))
+  d2_qb2 = MASS::kde2d(qb2_x, qb2_y, h = bandwidth_calc, n=n, lims=c(x_rng, y_rng))
+  
+  # create diff df
+  qb_diff <- d2_qb1
+  
+  # matrix subtraction density from qb2 from qb1
+  qb_diff$z <- d2_qb1$z - d2_qb2$z
+  
+  # add matrix col names
+  colnames(qb_diff$z) = qb_diff$y
+  
+  #### return tidy tibble ####
+  qb_diff$z %>% 
+    # each col_name is actually the y_coord from the matrix
+    as_tibble() %>% 
+    # add back the x_coord
+    mutate(x_coord= qb_diff$x) %>% 
+    pivot_longer(-x_coord, names_to = "y_coord", values_to = "z") %>% 
+    mutate(y_coord = as.double(y_coord),
+           bandwidth = list(bandwidth_calc),
+           comparison = glue::glue("{dplyr::first(pass_df$name)} (QB1) vs {dplyr::last(pass_df$name)} (QB2)"))
+  
+}
 
+
+compare <- function(data) {
+  
+  data %>%
+    ggplot(aes(x_coord, y_coord)) +
+    
+    # add core heatmap - note that geom_raster or geom_tile both work
+    geom_raster(aes(x_coord, y_coord, fill=z))  +
+    
+    # add contour polygon lines around the most dense points
+    stat_contour(aes(color=..level.., z = z)) +
+    
+    # add a fill gradient from low (blue) to high (red) 
+    # with white as the zero midpoint
+    scale_fill_gradient2(low="blue",mid="white", high="red", midpoint=0) +
+    scale_color_gradient2(low="blue", mid="white", high="red", midpoint=0) +
+    # drop the legends
+    guides(color=FALSE, fill = FALSE) +
+    add_field() +
+    labs(title = unique(data$comparison),
+         subtitle = "Color is more passes by <span style='color:red'>**QB1**</span> or by <span style='color:blue'>**QB2**</span>") +
+    # add some customizations to the plot
+    theme(legend.position = "top", legend.key.width = unit(2, "cm"),
+          plot.subtitle = element_markdown(size = 16, hjust = 0.5),
+          plot.title = element_text(size = 20, hjust = 0.5, face = "bold"))
+    
+}
 
