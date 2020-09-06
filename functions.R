@@ -189,8 +189,8 @@ compare <- function(data) {
          subtitle = "Color is more passes by <span style='color:red'>**QB1**</span> or by <span style='color:blue'>**QB2**</span>") +
     # add some customizations to the plot
     theme(legend.position = "top", legend.key.width = unit(2, "cm"),
-          plot.subtitle = element_markdown(size = 16, hjust = 0.5),
-          plot.title = element_text(size = 20, hjust = 0.5, face = "bold"))
+          plot.subtitle = element_markdown(size = 14, hjust = 0.5),
+          plot.title = element_text(size = 16, hjust = 0.5, face = "bold"))
     
 }
 

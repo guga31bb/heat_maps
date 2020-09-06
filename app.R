@@ -79,7 +79,7 @@ ui <- fluidPage(
     
     fluidRow(
       column(12, align="center",
-             {plotOutput(outputId = "plot1", width = "100%", height = "1000px") %>%
+             {plotOutput(outputId = "plot1", width = "100%", height = "600px") %>%
                  shinycssloaders::withSpinner(type = 6,# types see https://projects.lukehaas.me/css-loaders/
                                               color = "#414141",
                                               color.background = "#FFFFFF")
@@ -90,7 +90,7 @@ ui <- fluidPage(
     
     fluidRow(
       column(12, align="center",
-             {plotOutput(outputId = "plot2", width = "100%", height = "1000px") %>%
+             {plotOutput(outputId = "plot2", width = "100%", height = "800px") %>%
                  shinycssloaders::withSpinner(type = 6,# types see https://projects.lukehaas.me/css-loaders/
                                               color = "#414141",
                                               color.background = "#FFFFFF")
