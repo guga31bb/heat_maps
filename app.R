@@ -11,35 +11,12 @@ shinyOptions(cache = diskCache("./cache"), size = 50e6)
 souce_url <- "https://raw.githubusercontent.com/ArrowheadAnalytics/next-gen-scrapy-2.0/master/pass_and_game_data.csv"
 
 df <- read_csv(
-  souce_url,
-  col_types = cols(
-    game_id = col_double(),
-    name = col_character(),
-    pass_type = col_character(),
-    team = col_character(),
-    week = col_character(),
-    x_coord = col_double(),
-    y_coord = col_double(),
-    type = col_character(),
-    home_team = col_character(),
-    away_team = col_character(),
-    season = col_double(),
-    game_url = col_character(),
-    home_score = col_double(),
-    away_score = col_double()
-  )
-) %>%
-  na.omit() %>%
+  souce_url
+  ) %>%
+  # na.omit() %>%
   select(-X1) %>%
   mutate(
-    week = case_when(
-      week == "wild-card" ~ "18",
-      week == "divisional" ~ "19",
-      week == "conference" ~ "20",
-      week == "super-bowl" ~ "21",
-      TRUE ~ week
-    ),
-    week = as.integer(week)
+    week = as.integer(week.y)
   ) %>%
   group_by(name) %>%
   mutate(n = n()) %>%
