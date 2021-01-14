@@ -16,7 +16,21 @@ df <- read_csv(
   # na.omit() %>%
   dplyr::rename(x_coord = x, y_coord = y) %>%
   filter(!is.na(x_coord), !is.na(y_coord), !is.na(name)) %>%
-  mutate(name = if_else(name == "Cameron Newton", "Cam Newton", name)) %>%
+  mutate(name = case_when(
+    name == "Cameron Newton" ~ "Cam Newton", 
+    name == "Joshua Allen" ~ "Josh Allen",
+    name == "Theodore Bridgewater" ~ "Teddy Bridgewater",
+    name == "Alexander Smith" ~ "Alex Smith",
+    name == "Rayne Prescott" ~ "Dak Prescott",
+    name == "Derrick Watson" ~ "Deshaun Watson",
+    name == "James Garoppolo" ~ "Jimmy Garoppolo",
+    name == "Joseph Flacco" ~ "Joe Flacco",
+    name == "Matthew Ryan" ~ "Matt Ryan",
+    name == "Andrew Dalton" ~ "Andy Dalton",
+    name == "John Stafford" ~ "Matthew Stafford",
+    name == "Nicholas Mullens" ~ "Nick Mullens",
+    name == "Robby Bortles" ~ "Blake Bortles",
+    TRUE ~ name)) %>%
   group_by(name) %>%
   mutate(n = n()) %>%
   filter(n > 100) %>%
