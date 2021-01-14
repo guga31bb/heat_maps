@@ -16,6 +16,7 @@ df <- read_csv(
   # na.omit() %>%
   dplyr::rename(x_coord = x, y_coord = y) %>%
   filter(!is.na(x_coord), !is.na(y_coord), !is.na(name)) %>%
+  mutate(name = if_else(name == "Cameron Newton", "Cam Newton", name)) %>%
   group_by(name) %>%
   mutate(n = n()) %>%
   filter(n > 100) %>%
