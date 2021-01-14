@@ -14,10 +14,7 @@ df <- read_csv(
   souce_url
   ) %>%
   # na.omit() %>%
-  select(-X1) %>%
-  mutate(
-    week = as.integer(week.y)
-  ) %>%
+  dplyr::rename(x_coord = x, y_coord = y) %>%
   filter(!is.na(x_coord), !is.na(y_coord), !is.na(name)) %>%
   group_by(name) %>%
   mutate(n = n()) %>%
@@ -52,8 +49,8 @@ ui <- fluidPage(
                          c(unique(as.character(df$name))), selected = "Russell Wilson"),
              
              sliderInput("range1", "Seasons:",
-                         min = 2017, max = 2019,
-                         value = c(2017,2019), sep=""),
+                         min = 2017, max = 2020,
+                         value = c(2017,2020), sep=""),
              
              sliderInput("weeks1", "Weeks:",
                          min = 1, max = 21,
@@ -67,8 +64,8 @@ ui <- fluidPage(
                          c(unique(as.character(df$name))), selected = "Drew Brees"),
              
              sliderInput("range2", "Seasons:",
-                         min = 2017, max = 2019,
-                         value = c(2017,2019), sep=""),
+                         min = 2017, max = 2020,
+                         value = c(2017,2020), sep=""),
              
              sliderInput("weeks2", "Weeks:",
                          min = 1, max = 21,

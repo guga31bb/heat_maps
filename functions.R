@@ -4,6 +4,7 @@ library(ggtext)
 library(patchwork)
 library(paletteer)
 library(scales)
+library(shiny)
 
 not_div_5 <- function(x) {
   # select only elements of the vector not divisible by 5
