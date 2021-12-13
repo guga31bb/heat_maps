@@ -1,7 +1,7 @@
 source('functions.R')
 
 # if we make any figures
-shinyOptions(cache = diskCache("./cache"), size = 50e6)
+shinyOptions(cache = cachem::cache_mem(max_size = 50e6))
 
 #####################################################################################
 ######## Pull in the necessary data #################################################
